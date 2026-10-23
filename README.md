@@ -16,6 +16,7 @@ This repository contains the cleaned version of `hospital_patient_system.py` aft
 
 | File | Description |
 |------|-------------|
+| `README.md` | This file: project overview, results, setup and a summary of the fixes |
 | `hospital_patient_system.py` | Cleaned and fixed program |
 | `issues.md` | Table of every issue found, its type, line(s), description and fix |
 | `reflection.md` | Answers to the lab reflection questions |
