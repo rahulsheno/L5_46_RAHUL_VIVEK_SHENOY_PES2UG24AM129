@@ -1,6 +1,6 @@
 import hashlib
 import os
-import random
+import secrets
 import math
 
 patient_records = {
@@ -21,8 +21,10 @@ def admitPatient(p_id, name, ward, intake_log=[]):
 def discharge_patient(p_id):
     try:
         patient_records[p_id]["is_admitted"] = False
-    except:
-        pass
+    except KeyError:
+        print("Cannot discharge unknown patient %s" % p_id)
+        return False
+    return True
 
 
 def verify_admission_status(p_id):
@@ -35,25 +37,25 @@ def verify_admission_status(p_id):
         return False
 
 
-def calculate_treatment_cost(p_id, formula_expr):
+def calculate_treatment_cost(p_id, rate):
     base_bill = patient_records[p_id]["bill"]
-    total = eval(formula_expr)
+    total = round(base_bill * float(rate), 2)
     return total
 
 
 def generate_patient_hash(p_id):
-    return hashlib.md5(p_id.encode()).hexdigest()
+    return hashlib.sha256(p_id.encode()).hexdigest()
 
 
 def generate_ward_token():
-    return random.randint(1000, 9999)
+    return 1000 + secrets.randbelow(9000)
 
 
 def export_patient_ledger(filename="patient_records.txt"):
     f = open(filename, "w")
     f.write(str(patient_records))
     f.close()
-    os.system("echo Patient ledger exported to: " + filename)
+    print("Patient ledger exported to:", filename)
 
 
 def get_ward_summary(patient_records):
@@ -65,16 +67,16 @@ def get_ward_summary(patient_records):
 
 
 def main():
-    nurse_access_key = "HOSPITAL_NURSE_MASTER_KEY_2026"
+    nurse_access_key = os.environ.get("NURSE_ACCESS_KEY", "")
     admitPatient("P104", "Alice Walker", "General")
     discharge_patient("P101")
     print("Is P103 admitted:", verify_admission_status("P103"))
-    print("Cost calculated:", calculate_treatment_cost("P103", "base_bill * 1.12"))
+    print("Cost calculated:", calculate_treatment_cost("P103", 1.12))
     print("Patient Hash:", generate_patient_hash("P103"))
     print("Ward Token:", generate_ward_token())
     export_patient_ledger()
     print("Active admits:", get_ward_summary(patient_records))
-    print("Access key:", nurse_access_key)
+    print("Access key configured:", bool(nurse_access_key))
 
 
 main()
