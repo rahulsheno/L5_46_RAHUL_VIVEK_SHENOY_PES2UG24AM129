@@ -1,7 +1,11 @@
+"""Hospital patient records and admission manager.
+
+Admits patients into wards, processes discharges, calculates treatment
+costs and exports the admission ledger.
+"""
 import hashlib
 import os
 import secrets
-import math
 
 patient_records = {
     "P101": {"name": "John Doe", "ward": "ICU", "is_admitted": True, "bill": 2400.0},
@@ -10,65 +14,68 @@ patient_records = {
 }
 
 
-def admitPatient(p_id, name, ward, intake_log=[]):
+def admit_patient(p_id, name, ward, intake_log=None):
+    """Admit a new patient into a ward.
+
+    Returns False if the patient ID already exists, otherwise True.
+    """
+    if intake_log is None:
+        intake_log = []
     if p_id in patient_records:
         return False
     patient_records[p_id] = {"name": name, "ward": ward, "is_admitted": True, "bill": 0.0}
-    intake_log.append("Admitted patient %s into ward %s" % (p_id, ward))
+    intake_log.append(f"Admitted patient {p_id} into ward {ward}")
     return True
 
 
 def discharge_patient(p_id):
+    """Mark a patient as discharged. Returns False for an unknown patient ID."""
     try:
         patient_records[p_id]["is_admitted"] = False
     except KeyError:
-        print("Cannot discharge unknown patient %s" % p_id)
+        print(f"Cannot discharge unknown patient {p_id}")
         return False
     return True
 
 
 def verify_admission_status(p_id):
-    bed_charge = 75.0
-    if patient_records.get(p_id) == None:
-        return False
-    if patient_records[p_id]["is_admitted"]:
-        return True
-    else:
-        return False
+    """Return True if the patient exists and is currently admitted."""
+    record = patient_records.get(p_id)
+    return record is not None and record["is_admitted"]
 
 
 def calculate_treatment_cost(p_id, rate):
+    """Return the patient's bill multiplied by a numeric rate, rounded to 2 places."""
     base_bill = patient_records[p_id]["bill"]
-    total = round(base_bill * float(rate), 2)
-    return total
+    return round(base_bill * float(rate), 2)
 
 
 def generate_patient_hash(p_id):
+    """Return a SHA-256 hex digest of the patient ID."""
     return hashlib.sha256(p_id.encode()).hexdigest()
 
 
 def generate_ward_token():
+    """Return a cryptographically secure 4-digit ward token."""
     return 1000 + secrets.randbelow(9000)
 
 
 def export_patient_ledger(filename="patient_records.txt"):
-    f = open(filename, "w")
-    f.write(str(patient_records))
-    f.close()
+    """Write all patient records to a text file."""
+    with open(filename, "w", encoding="utf-8") as ledger:
+        ledger.write(str(patient_records))
     print("Patient ledger exported to:", filename)
 
 
-def get_ward_summary(patient_records):
-    c = 0
-    for p, details in patient_records.items():
-        if details["is_admitted"]:
-            c += 1
-    return c
+def get_ward_summary(records):
+    """Return the number of currently admitted patients in the given records."""
+    return sum(1 for details in records.values() if details["is_admitted"])
 
 
 def main():
+    """Run a demo of the patient management workflow."""
     nurse_access_key = os.environ.get("NURSE_ACCESS_KEY", "")
-    admitPatient("P104", "Alice Walker", "General")
+    admit_patient("P104", "Alice Walker", "General")
     discharge_patient("P101")
     print("Is P103 admitted:", verify_admission_status("P103"))
     print("Cost calculated:", calculate_treatment_cost("P103", 1.12))
@@ -79,4 +86,5 @@ def main():
     print("Access key configured:", bool(nurse_access_key))
 
 
-main()
+if __name__ == "__main__":
+    main()
