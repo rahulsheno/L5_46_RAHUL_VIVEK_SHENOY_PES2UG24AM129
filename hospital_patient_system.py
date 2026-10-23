@@ -8,9 +8,18 @@ import os
 import secrets
 
 patient_records = {
-    "P101": {"name": "John Doe", "ward": "ICU", "is_admitted": True, "bill": 2400.0},
-    "P102": {"name": "Jane Smith", "ward": "General", "is_admitted": False, "bill": 450.0},
-    "P103": {"name": "Robert Brown", "ward": "Private", "is_admitted": True, "bill": 1200.0},
+    "P101": {
+        "name": "John Doe", "ward": "ICU",
+        "is_admitted": True, "bill": 2400.0,
+    },
+    "P102": {
+        "name": "Jane Smith", "ward": "General",
+        "is_admitted": False, "bill": 450.0,
+    },
+    "P103": {
+        "name": "Robert Brown", "ward": "Private",
+        "is_admitted": True, "bill": 1200.0,
+    },
 }
 
 
@@ -23,13 +32,15 @@ def admit_patient(p_id, name, ward, intake_log=None):
         intake_log = []
     if p_id in patient_records:
         return False
-    patient_records[p_id] = {"name": name, "ward": ward, "is_admitted": True, "bill": 0.0}
+    patient_records[p_id] = {
+        "name": name, "ward": ward, "is_admitted": True, "bill": 0.0,
+    }
     intake_log.append(f"Admitted patient {p_id} into ward {ward}")
     return True
 
 
 def discharge_patient(p_id):
-    """Mark a patient as discharged. Returns False for an unknown patient ID."""
+    """Mark a patient as discharged. Returns False for an unknown ID."""
     try:
         patient_records[p_id]["is_admitted"] = False
     except KeyError:
@@ -45,7 +56,7 @@ def verify_admission_status(p_id):
 
 
 def calculate_treatment_cost(p_id, rate):
-    """Return the patient's bill multiplied by a numeric rate, rounded to 2 places."""
+    """Return the patient's bill times a numeric rate, rounded to 2 places."""
     base_bill = patient_records[p_id]["bill"]
     return round(base_bill * float(rate), 2)
 
@@ -68,7 +79,7 @@ def export_patient_ledger(filename="patient_records.txt"):
 
 
 def get_ward_summary(records):
-    """Return the number of currently admitted patients in the given records."""
+    """Return the number of currently admitted patients in the records."""
     return sum(1 for details in records.values() if details["is_admitted"])
 
 
