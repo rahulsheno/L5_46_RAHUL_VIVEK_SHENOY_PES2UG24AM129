@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Lab 5: Static Code Analysis — Hospital Patient System
 
 **Your file:** `hospital_patient_system.py`
@@ -49,3 +50,6 @@ The code works, but only just. It has quality, style and security problems of th
 **Target:** aim for a Pylint score above 9.5 on your final file. A perfect 10.00/10 is very good.
 
 Be ready to explain the bugs you found and how you fixed them. You may be called on to present.
+=======
+# L5_46_RAHUL_VIVEK_SHENOY_PES2UG24AM129
+>>>>>>> cc86170962cc51e6e1f24b9a17c5ee666847f4c0
