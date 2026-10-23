@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Lab 5: Static Code Analysis — Hospital Patient System
 
 **Your file:** `hospital_patient_system.py`
